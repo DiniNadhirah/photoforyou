@@ -1,0 +1,7 @@
+$ curl -s http://localhost:8080/health  (6 times)
+{"instance":"A","pid":5292,"status":"ok","uptime_s":2}
+{"instance":"A","pid":5292,"status":"ok","uptime_s":2}
+{"instance":"B","pid":5293,"status":"ok","uptime_s":2}
+{"instance":"C","pid":5294,"status":"ok","uptime_s":2}
+{"instance":"A","pid":5292,"status":"ok","uptime_s":2}
+{"instance":"B","pid":5293,"status":"ok","uptime_s":2}

@@ -1,0 +1,104 @@
+<!doctype html><meta charset="utf-8"><title>PhotoForYou v2 architecture</title>
+<style>
+body{margin:0;background:#fff;font-family:Inter,system-ui,sans-serif}
+svg text{font-family:Inter,system-ui,sans-serif;fill:#16202c}
+.eye{font-size:10.5px;font-weight:700;letter-spacing:.09em}
+.tt{font-size:15px;font-weight:700}.nm{font-size:13px;font-weight:600}.sb{font-size:11.5px;fill:#5b6676}
+.mono{font-family:"DejaVu Sans Mono",monospace;font-size:11px}
+.bnd{fill:none;stroke:#5b6676;stroke-width:1.4;stroke-dasharray:7 5}
+.ext{fill:#fff;stroke:#d3d9e2;stroke-width:1.4}.in{fill:#fff;stroke:#d3d9e2}
+.cmp{fill:#e9effd;stroke:#2456d3;stroke-width:1.6}.lb{fill:#efebfb;stroke:#6a4cc2;stroke-width:1.6}
+.db{fill:#fbeedc;stroke:#b1610a;stroke-width:1.6}.st{fill:#e2f3eb;stroke:#17865a;stroke-width:1.6}
+.dep{fill:#dff1f3;stroke:#0c7a8a;stroke-width:1.4}.sec{fill:#fff7e6;stroke:#d9a400;stroke-width:1.4}
+.fl{fill:none;stroke:#16202c;stroke-width:1.6}.dl{fill:none;stroke:#2456d3;stroke-width:2;stroke-dasharray:8 5}
+.n{fill:#16202c}.nt{fill:#fff;font-size:11px;font-weight:700}.ndl{fill:#2456d3}
+</style>
+<svg viewBox="0 0 1200 730" width="1200" height="730" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#16202c"/></marker>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#2456d3"/></marker></defs>
+
+<text x="20" y="32" class="tt" style="font-size:20px">PhotoForYou v2 · system architecture</text>
+<text x="20" y="52" class="sb">Render (compute + load balancing) · Supabase (database + storage) · encryption happens in the user's browser</text>
+
+<!-- Browser -->
+<rect x="20" y="90" width="240" height="380" rx="12" class="ext"/>
+<text x="36" y="116" class="eye" style="fill:#5b6676">USER'S DEVICE</text>
+<text x="36" y="140" class="tt">Browser</text>
+<text x="36" y="158" class="sb">iPhone Safari · PC Chrome / Edge</text>
+<rect x="34" y="172" width="212" height="50" rx="7" class="in"/><text x="46" y="192" class="nm">Web pages</text><text x="46" y="210" class="sb">gallery, upload, viewer</text>
+<rect x="34" y="230" width="212" height="76" rx="7" class="sec"/><text x="46" y="250" class="nm">vault.js (Web Crypto)</text><text x="46" y="268" class="sb">AES-256-GCM encrypt/decrypt</text><text x="46" y="284" class="sb">PBKDF2 · 600,000 rounds</text><text x="46" y="298" class="sb">thumbnails made on device</text>
+<rect x="34" y="314" width="212" height="50" rx="7" class="sec"/><text x="46" y="334" class="nm">Vault key</text><text x="46" y="352" class="sb">IndexedDB · never leaves device</text>
+<text x="36" y="392" class="sb">Server only ever receives</text><text x="36" y="408" class="sb">encrypted bytes + encrypted</text><text x="36" y="424" class="sb">file names.</text>
+
+<!-- Render boundary -->
+<rect x="300" y="70" width="470" height="500" rx="14" class="bnd"/>
+<text x="318" y="96" class="nm">Render · free web services</text>
+<rect x="320" y="110" width="430" height="140" rx="12" class="lb"/>
+<text x="338" y="134" class="eye" style="fill:#6a4cc2">LOAD BALANCER</text>
+<text x="338" y="156" class="tt">nginx · photoforyou-lb</text>
+<text x="338" y="180" class="sb">• round robin across instances, failover if one dies</text>
+<text x="338" y="198" class="sb">• rate limiting: 10 logins/min, 20 req/s per IP → 429</text>
+<text x="338" y="216" class="sb">• connection limit · gzip · static-file cache</text>
+<text x="338" y="234" class="sb">• passes real client IP + shared LB token</text>
+
+<rect x="320" y="290" width="430" height="260" rx="12" class="cmp"/>
+<rect x="336" y="306" width="196" height="146" rx="9" class="in"/>
+<text x="350" y="330" class="tt">Instance A</text><text x="350" y="348" class="mono">photoforyou-a</text>
+<text x="350" y="372" class="sb">Flask + gunicorn</text><text x="350" y="388" class="sb">2 workers × 4 threads</text><text x="350" y="404" class="sb">/health for checks</text><text x="350" y="420" class="sb">CSRF · CSP · ownership</text><text x="350" y="436" class="sb">checks on every request</text>
+<rect x="540" y="306" width="196" height="146" rx="9" class="in"/>
+<text x="554" y="330" class="tt">Instance B</text><text x="554" y="348" class="mono">photoforyou-b</text>
+<text x="554" y="372" class="sb">identical copy</text><text x="554" y="388" class="sb">shared SECRET_KEY →</text><text x="554" y="404" class="sb">login works on any</text><text x="554" y="420" class="sb">instance</text>
+<text x="338" y="476" class="eye" style="fill:#2456d3">APP INSTANCES (SAME CODE, STATELESS)</text>
+<text x="338" y="498" class="sb">Add more instances = more capacity (horizontal scaling).</text>
+<text x="338" y="516" class="sb">Each instance: app-level rate limit as second layer.</text>
+<text x="338" y="534" class="sb">Holds no files and no sessions on disk.</text>
+
+<!-- arrows inside Render -->
+<path d="M434,250 V304" class="fl" marker-end="url(#a)"/><path d="M638,250 V304" class="fl" marker-end="url(#a)"/>
+<circle cx="536" cy="272" r="10" class="n"/><text x="536" y="276" text-anchor="middle" class="nt">2</text>
+<text x="552" y="276" class="sb">round robin</text>
+
+<!-- Browser -> LB -->
+<path d="M260,180 H318" class="fl" marker-end="url(#a)"/>
+<circle cx="282" cy="160" r="10" class="n"/><text x="282" y="164" text-anchor="middle" class="nt">1</text>
+<text x="262" y="206" class="sb" style="font-size:10.5px">HTTPS</text>
+
+<!-- Supabase boundary -->
+<rect x="810" y="70" width="370" height="500" rx="14" class="bnd"/>
+<text x="828" y="96" class="nm">Supabase · free plan</text>
+<rect x="830" y="110" width="330" height="180" rx="12" class="db"/>
+<text x="848" y="134" class="eye" style="fill:#b1610a">DATABASE</text>
+<text x="848" y="156" class="tt">PostgreSQL</text>
+<text x="848" y="180" class="sb">users: username, password hash (scrypt),</text><text x="848" y="196" class="sb">vault salt + check value</text>
+<text x="848" y="218" class="sb">media: owner, folder, encrypted name,</text><text x="848" y="234" class="sb">type, size, storage path</text>
+<text x="848" y="258" class="sb">Row Level Security ON · metadata only</text><text x="848" y="274" class="sb">every query filtered by user_id</text>
+<rect x="830" y="320" width="330" height="230" rx="12" class="st"/>
+<text x="848" y="344" class="eye" style="fill:#17865a">STORAGE</text>
+<text x="848" y="366" class="tt">Private bucket · vault</text>
+<rect x="846" y="380" width="298" height="34" rx="6" class="in"/><text x="858" y="402" class="mono">&lt;user_id&gt;/&lt;uuid&gt;.bin</text><text x="1132" y="402" text-anchor="end" class="sb">encrypted file</text>
+<rect x="846" y="420" width="298" height="34" rx="6" class="in"/><text x="858" y="442" class="mono">&lt;user_id&gt;/&lt;uuid&gt;.thumb.bin</text><text x="1132" y="442" text-anchor="end" class="sb">thumbnail</text>
+<text x="848" y="478" class="sb">One folder per account · random file IDs</text>
+<text x="848" y="496" class="sb">No public URLs · signed URLs expire in 1 h</text>
+<text x="848" y="514" class="sb">Admins see only scrambled bytes</text>
+<text x="848" y="532" class="sb">50 MB per file · 200 MB quota per user</text>
+
+<!-- app -> db / storage -->
+<path d="M750,380 H790 V200 H828" class="fl" marker-end="url(#a)"/>
+<circle cx="790" cy="290" r="10" class="n"/><text x="790" y="294" text-anchor="middle" class="nt">3</text>
+<path d="M750,440 H828" class="fl" marker-end="url(#a)"/>
+<circle cx="790" cy="440" r="10" class="n"/><text x="790" y="444" text-anchor="middle" class="nt">4</text>
+
+<!-- signed URL download -->
+<path d="M995,550 V600 H140 V472" class="dl" marker-end="url(#ab)"/>
+<circle cx="960" cy="600" r="10" class="ndl"/><text x="960" y="604" text-anchor="middle" class="nt">5</text>
+<text x="160" y="592" class="sb" style="fill:#2456d3;font-weight:600">Signed-URL download: the encrypted file comes straight from storage and is decrypted in the browser</text>
+
+<!-- legend -->
+<g transform="translate(20,640)">
+<text x="0" y="0" class="nm">① browser → load balancer (HTTPS)   ② nginx picks a healthy instance   ③ metadata read/write (filtered by owner)   ④ encrypted upload saved to private bucket   ⑤ signed-URL download</text>
+<rect x="0" y="18" width="560" height="52" rx="9" class="dep"/>
+<text x="14" y="40" class="nm">Deploy: GitHub repo → Render Blueprint (render.yaml)</text><text x="14" y="58" class="sb">push to main → Render rebuilds A, B and the load balancer automatically</text>
+<rect x="580" y="18" width="580" height="52" rx="9" class="ext"/>
+<text x="594" y="40" class="nm">Testing: pytest (19 tests) · Playwright (browser) · Locust (load)</text><text x="594" y="58" class="sb">load test: 150 users, 1 vs 3 instances; failover; rate limiting</text>
+</g>
+</svg>

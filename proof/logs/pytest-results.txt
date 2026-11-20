@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- /tmp/claude-0/-home-claude/b7d9348e-c3a9-567f-893b-eb3995b23e4c/scratchpad/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/claude-0/-home-claude/b7d9348e-c3a9-567f-893b-eb3995b23e4c/scratchpad/photoforyou-v2
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.16.0
+collecting ... collected 19 items
+
+tests/test_app.py::test_health_reports_instance PASSED                   [  5%]
+tests/test_app.py::test_pages_require_login PASSED                       [ 10%]
+tests/test_app.py::test_security_headers_present PASSED                  [ 15%]
+tests/test_app.py::test_password_is_hashed_not_stored_plain PASSED       [ 21%]
+tests/test_app.py::test_register_validation PASSED                       [ 26%]
+tests/test_app.py::test_wrong_password_rejected PASSED                   [ 31%]
+tests/test_app.py::test_upload_without_csrf_token_is_blocked PASSED      [ 36%]
+tests/test_app.py::test_upload_stores_file_under_user_folder PASSED      [ 42%]
+tests/test_app.py::test_upload_rejects_unencrypted_or_wrong_size PASSED  [ 47%]
+tests/test_app.py::test_upload_rejects_disallowed_type PASSED            [ 52%]
+tests/test_app.py::test_upload_rejects_file_over_limit PASSED            [ 57%]
+tests/test_app.py::test_quota_is_enforced PASSED                         [ 63%]
+tests/test_app.py::test_folder_names_are_merged_case_insensitively PASSED [ 68%]
+tests/test_app.py::test_users_only_see_their_own_files PASSED            [ 73%]
+tests/test_app.py::test_user_cannot_open_rename_or_delete_another_users_file PASSED [ 78%]
+tests/test_app.py::test_owner_can_rename_move_and_delete PASSED          [ 84%]
+tests/test_app.py::test_storage_needs_valid_signature PASSED             [ 89%]
+tests/test_app.py::test_stored_bytes_are_not_the_original PASSED         [ 94%]
+tests/test_app.py::test_login_rate_limit_returns_429 PASSED              [100%]
+
+============================== 19 passed in 1.53s ==============================

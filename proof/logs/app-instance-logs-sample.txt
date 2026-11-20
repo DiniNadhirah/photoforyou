@@ -1,0 +1,25 @@
+# App instance logs (one line per request, written by app.py)
+
+== instance A ==
+instance=A method=GET path=/register status=200 ms=8.5 ip=10.173.123.11
+instance=A method=GET path=/register status=200 ms=3.3 ip=10.10.17.33
+instance=A method=GET path=/register status=200 ms=12.6 ip=10.77.108.249
+instance=A method=GET path=/register status=200 ms=1.4 ip=10.27.187.57
+instance=A method=GET path=/register status=200 ms=1.5 ip=10.180.27.23
+instance=A method=POST path=/register status=302 ms=486.7 ip=10.77.108.249
+
+== instance B ==
+instance=B method=GET path=/register status=200 ms=15.8 ip=10.174.88.97
+instance=B method=GET path=/register status=200 ms=35.4 ip=10.188.95.131
+instance=B method=GET path=/register status=200 ms=41.8 ip=10.9.71.84
+instance=B method=GET path=/register status=200 ms=0.6 ip=10.129.28.230
+instance=B method=GET path=/register status=200 ms=25.7 ip=10.133.149.118
+instance=B method=POST path=/register status=302 ms=485.8 ip=10.174.88.97
+
+== instance C ==
+instance=C method=GET path=/register status=200 ms=5.5 ip=10.115.58.162
+instance=C method=GET path=/register status=200 ms=0.4 ip=10.213.219.42
+instance=C method=GET path=/register status=200 ms=0.3 ip=10.84.149.13
+instance=C method=GET path=/register status=200 ms=0.4 ip=10.104.97.10
+instance=C method=GET path=/register status=200 ms=22.4 ip=10.66.190.227
+instance=C method=POST path=/register status=302 ms=484.9 ip=10.115.58.162

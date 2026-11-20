@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Upload{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/upload.js') }}" defer></script>{% endblock %}
+{% block content %}
+<section class="card" id="upload" data-max-mb="{{ max_file_mb }}">
+  <h1>Upload photos & videos</h1>
+  <p class="muted">Choose one or many files. Each file is encrypted on this device, then sent to the cloud.</p>
+
+  <form id="upload-form">
+    <label for="folder">Folder</label>
+    <input id="folder" type="text" list="folders" value="{{ preset }}" placeholder="e.g. Holiday 2026" maxlength="40" required>
+    <datalist id="folders">
+      {% for f in folders %}<option value="{{ f }}">{% endfor %}
+    </datalist>
+    <p class="hint">Pick an existing folder or type a new name.</p>
+
+    <label for="files">Photos and videos</label>
+    <div class="dropzone" id="dropzone">
+      <input id="files" type="file" multiple
+             accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif,video/mp4,video/quicktime,.mov,video/webm">
+      <p><strong>Choose files</strong> or drag them here</p>
+      <p class="hint">JPG, PNG, HEIC, WEBP, GIF, MP4, MOV · up to {{ max_file_mb }} MB each</p>
+    </div>
+
+    <ul class="file-list" id="file-list"></ul>
+    <button type="submit" class="btn" id="upload-btn" disabled>Encrypt & upload</button>
+  </form>
+</section>
+{% endblock %}

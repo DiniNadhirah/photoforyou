@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest
+locust==2.32.4
+matplotlib
+playwright
+requests

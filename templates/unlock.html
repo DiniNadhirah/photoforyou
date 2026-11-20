@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Unlock vault' if has_vault else 'Create vault' }}{% endblock %}
+{% block body_class %}auth{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/unlock.js') }}" defer></script>{% endblock %}
+{% block content %}
+<section class="card auth-card" id="vault"
+         data-user-id="{{ user.id }}"
+         data-salt="{{ user.vault_salt or '' }}"
+         data-check="{{ user.vault_check or '' }}"
+         data-mode="{{ 'unlock' if has_vault else 'setup' }}"
+         data-next="{{ url_for('gallery') }}">
+  {% if has_vault %}
+    <h1>Unlock your vault</h1>
+    <p class="muted">Enter your <strong>vault passphrase</strong>. It unlocks your photos on this device only and is never sent to our server.</p>
+  {% else %}
+    <h1>Create your vault passphrase</h1>
+    <p class="muted">Your photos are encrypted on this device before upload. Only this passphrase can unlock them, so not even the PhotoForYou team can see your photos.</p>
+    <div class="notice">
+      <strong>Write it down.</strong> If you forget it, nobody can recover your photos, not even us.
+      Use something different from your login password.
+    </div>
+  {% endif %}
+  <div class="alert" id="vault-error" role="alert" hidden></div>
+  <form id="vault-form">
+    <label for="passphrase">Vault passphrase {% if not has_vault %}<span class="hint">(at least 8 characters)</span>{% endif %}</label>
+    <input id="passphrase" type="password" required minlength="{{ 1 if has_vault else 8 }}" autocomplete="off">
+    {% if not has_vault %}
+    <label for="passphrase2">Confirm passphrase</label>
+    <input id="passphrase2" type="password" required minlength="8" autocomplete="off">
+    <label class="check"><input type="checkbox" id="understand" required> I understand my photos cannot be recovered without this passphrase.</label>
+    {% endif %}
+    <button type="submit" class="btn" id="vault-btn">{{ 'Unlock' if has_vault else 'Create vault' }}</button>
+    <p class="muted small" id="vault-status" aria-live="polite"></p>
+  </form>
+</section>
+{% endblock %}
