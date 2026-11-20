@@ -1,0 +1,120 @@
+{
+  "base": "http://localhost:8080",
+  "user_a": "rara_152133",
+  "user_b": "sarah_152133",
+  "checks": [
+    {
+      "check": "folders merged case-insensitively ('family' joined 'Family')",
+      "passed": true,
+      "detail": "['Family\\n4', 'Holiday 2026\\n5']"
+    },
+    {
+      "check": "downloaded file is byte-for-byte identical to the original (SHA-256)",
+      "passed": true,
+      "detail": "c68c52b4b0828755\u2026"
+    },
+    {
+      "check": "delete removes the file",
+      "passed": true,
+      "detail": "9 \u2192 8 files"
+    },
+    {
+      "check": "user B sees only their own 1 file (not user A's files)",
+      "passed": true,
+      "detail": "B sees 1"
+    },
+    {
+      "check": "user B gets 404 when requesting user A's file",
+      "passed": true,
+      "detail": "HTTP 404"
+    },
+    {
+      "check": "user B cannot delete user A's file",
+      "passed": true,
+      "detail": "HTTP 404"
+    },
+    {
+      "check": "load balancer spreads requests over instances",
+      "passed": true,
+      "detail": "A \u2192 B \u2192 C \u2192 A \u2192 B \u2192 C"
+    }
+  ],
+  "instances_seen": [
+    "A",
+    "B",
+    "C",
+    "A",
+    "B",
+    "C"
+  ],
+  "screenshots": [
+    {
+      "file": "screenshots/01-register.png",
+      "caption": "Sign up form (password rules, CSRF-protected form)"
+    },
+    {
+      "file": "screenshots/02-vault-setup.png",
+      "caption": "Vault passphrase: the encryption key is created on this device only"
+    },
+    {
+      "file": "screenshots/03-gallery-empty.png",
+      "caption": "Empty gallery for a new user"
+    },
+    {
+      "file": "screenshots/04-upload-queue.png",
+      "caption": "Multiple photos and a video selected for one upload"
+    },
+    {
+      "file": "screenshots/05-upload-done.png",
+      "caption": "Every file encrypted in the browser and uploaded, with progress"
+    },
+    {
+      "file": "screenshots/06-gallery.png",
+      "caption": "Gallery: folders A\u2013Z, decrypted thumbnails, storage bar, search and sort"
+    },
+    {
+      "file": "screenshots/07-viewer-photo.png",
+      "caption": "Full photo, downloaded encrypted and decrypted in the browser"
+    },
+    {
+      "file": "screenshots/08-viewer-video.png",
+      "caption": "Videos are supported too (encrypted the same way)"
+    },
+    {
+      "file": "screenshots/09-menu.png",
+      "caption": "Actions: view, download original, rename, move, delete"
+    },
+    {
+      "file": "screenshots/10-rename.png",
+      "caption": "Rename: the new name is encrypted before it is sent"
+    },
+    {
+      "file": "screenshots/11-search-sort.png",
+      "caption": "Search by name and sort (name A\u2013Z)"
+    },
+    {
+      "file": "screenshots/12-delete-confirm.png",
+      "caption": "Delete asks for confirmation inside the page"
+    },
+    {
+      "file": "screenshots/13-gallery-after.png",
+      "caption": "Gallery after rename, move and delete"
+    },
+    {
+      "file": "screenshots/14-wrong-passphrase.png",
+      "caption": "Wrong vault passphrase: photos stay locked"
+    },
+    {
+      "file": "screenshots/15-user-b-isolated.png",
+      "caption": "Second account (sarah_152133) sees only their own photo"
+    },
+    {
+      "file": "screenshots/16-user-b-blocked.png",
+      "caption": "User B tries to open user A's file by ID: 404 Not found"
+    },
+    {
+      "file": "screenshots/17-mobile-gallery.png",
+      "caption": "Phone layout (iPhone 13 size)"
+    }
+  ]
+}

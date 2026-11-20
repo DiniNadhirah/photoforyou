@@ -1,4 +1,7 @@
 .env
 __pycache__/
-database.db
-static/uploads/
+*.pyc
+data/
+venv/
+.venv/
+loadtest/results/

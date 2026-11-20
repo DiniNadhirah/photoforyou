@@ -1,0 +1,38 @@
+{
+  "one_instance": {
+    "rps": 111.22223008002585,
+    "avg": 785.760607961555,
+    "p95": 4000.0,
+    "requests": 10040,
+    "failures": 0
+  },
+  "three_instances": {
+    "rps": 235.21801099554395,
+    "avg": 89.57872398352846,
+    "p95": 530.0,
+    "requests": 21005,
+    "failures": 0
+  },
+  "distribution": {
+    "A": 7069,
+    "B": 7063,
+    "C": 7072
+  },
+  "failover": {
+    "total_requests": 10982,
+    "failed": 1,
+    "kill_second": 30,
+    "revive_second": 55
+  },
+  "ratelimit": {
+    "login": {
+      "401": 6,
+      "429": 34
+    },
+    "flood": {
+      "200": 44,
+      "429": 256
+    },
+    "other_user_status": 200
+  }
+}

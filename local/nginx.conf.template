@@ -1,0 +1,111 @@
+# =====================================================================
+# nginx LOAD BALANCER - local test cluster (3 app instances on one PC)
+# Used by local/cluster.sh. Placeholders __RUN__ and __LB_TOKEN__ are
+# filled in by the script.
+# =====================================================================
+worker_processes auto;
+pid __RUN__/nginx.pid;
+error_log __RUN__/error.log warn;
+events { worker_connections 4096; }
+
+http {
+    client_body_temp_path __RUN__/tmp/body;
+    proxy_temp_path       __RUN__/tmp/proxy;
+    fastcgi_temp_path     __RUN__/tmp/fastcgi;
+    uwsgi_temp_path       __RUN__/tmp/uwsgi;
+    scgi_temp_path        __RUN__/tmp/scgi;
+
+    # One log line per request, including WHICH instance served it.
+    log_format lb '$time_iso8601 client=$remote_addr upstream=$upstream_addr '
+                  'status=$status upstream_status=$upstream_status '
+                  'rt=$request_time urt=$upstream_response_time "$request"';
+    access_log __RUN__/access.log lb;
+
+    # The load tester runs on this PC and imitates many different users by
+    # sending X-Forwarded-For; trust it only from localhost.
+    set_real_ip_from 127.0.0.1;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+
+    # ---- Rate limiting (shared by ALL instances, unlike app-level limits) ----
+    map $request_method $auth_post_key { POST $binary_remote_addr; default ""; }
+    limit_req_zone $binary_remote_addr zone=req_per_ip:10m   rate=20r/s;
+    limit_req_zone $auth_post_key      zone=login_per_ip:10m rate=10r/m;
+    limit_conn_zone $binary_remote_addr zone=conn_per_ip:10m;
+    limit_req_status 429;
+    limit_conn_status 429;
+
+    # ---- Cache for CSS/JS so the app instances do less work ------------------
+    proxy_cache_path __RUN__/cache levels=1:2 keys_zone=static_cache:10m
+                     max_size=100m inactive=60m use_temp_path=off;
+
+    # ---- The pool of app instances -------------------------------------------
+    upstream photoforyou_app {
+        # Default = round robin (A, B, C, A, B, C ...).
+        # Alternative: "least_conn;" sends each request to the least busy one.
+        server 127.0.0.1:8001 max_fails=2 fail_timeout=10s;   # instance A
+        server 127.0.0.1:8002 max_fails=2 fail_timeout=10s;   # instance B
+        server 127.0.0.1:8003 max_fails=2 fail_timeout=10s;   # instance C
+        keepalive 32;
+    }
+
+    server {
+        listen 8080;
+        client_max_body_size 60m;     # one encrypted photo/video + thumbnail
+        limit_conn conn_per_ip 30;
+
+        gzip on;
+        gzip_min_length 1024;
+        gzip_types text/css application/javascript application/json;
+
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Client-IP $remote_addr;
+        proxy_set_header X-LB-Token "__LB_TOKEN__";
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+
+        # FAILOVER: if an instance is down or errors, retry on the next one.
+        proxy_next_upstream error timeout http_502 http_503 http_504;
+        proxy_next_upstream_tries 3;
+        proxy_next_upstream_timeout 10s;
+
+        add_header X-Upstream $upstream_addr always;
+        add_header X-Load-Balancer "nginx" always;
+
+        # Friendly page when a visitor is rate limited
+        error_page 429 = @too_many;
+        location @too_many {
+            default_type text/html;
+            add_header Retry-After 60 always;
+            add_header X-Load-Balancer "nginx" always;
+            return 429 '<!doctype html><meta name=viewport content="width=device-width,initial-scale=1"><title>Slow down - PhotoForYou</title><body style="font-family:system-ui,sans-serif;background:#f6f7fb;color:#1e293b;display:grid;place-items:center;min-height:90vh;margin:0"><div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:32px;max-width:420px"><p style="color:#4f46e5;font-weight:700;font-size:12px;letter-spacing:.08em;margin:0">ERROR 429 - RATE LIMITED BY LOAD BALANCER</p><h1 style="margin:8px 0">Too many requests</h1><p style="color:#64748b">You are sending requests too quickly. Please wait a minute and try again.</p></div>';
+        }
+
+        location = /lb-health { access_log off; return 200 "ok\n"; }
+
+        location /static/ {
+            proxy_pass http://photoforyou_app;
+            proxy_cache static_cache;
+            proxy_cache_valid 200 10m;
+            add_header X-Cache $upstream_cache_status always;
+            add_header X-Upstream $upstream_addr always;
+            add_header X-Load-Balancer "nginx" always;
+        }
+
+        location ~ ^/(login|register)$ {
+            limit_req zone=login_per_ip burst=5 nodelay;   # stops password guessing
+            limit_req zone=req_per_ip burst=40 nodelay;
+            proxy_pass http://photoforyou_app;
+        }
+
+        location / {
+            limit_req zone=req_per_ip burst=40 nodelay;
+            proxy_pass http://photoforyou_app;
+        }
+    }
+}

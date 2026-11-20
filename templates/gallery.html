@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Gallery{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/gallery.js') }}" defer></script>{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="page-head">
+    <div>
+      <h1>Your gallery</h1>
+      <p class="muted small"><span class="lock-dot"></span>End-to-end encrypted · only you can see these files</p>
+    </div>
+    <a class="btn" href="{{ url_for('upload_page') }}">+ Upload</a>
+  </div>
+
+  <div class="usage" id="usage" hidden>
+    <div class="usage-bar"><span id="usage-fill"></span></div>
+    <span class="small muted" id="usage-text"></span>
+  </div>
+
+  <div class="toolbar" id="toolbar" hidden>
+    <label class="sr" for="search">Search</label>
+    <input id="search" type="search" placeholder="Search by file name">
+    <label class="sr" for="sort">Sort</label>
+    <select id="sort">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name A–Z</option>
+      <option value="largest">Largest first</option>
+    </select>
+  </div>
+
+  <p class="muted" id="loading">Unlocking your gallery…</p>
+  <div id="empty" class="empty" hidden>
+    <h2>No photos yet</h2>
+    <p class="muted">Upload photos and videos from your iPhone or computer. They are encrypted before they leave your device.</p>
+    <a class="btn" href="{{ url_for('upload_page') }}">Upload your first photo</a>
+  </div>
+  <div id="folders"></div>
+</section>
+
+<!-- Viewer -->
+<dialog id="viewer" class="viewer">
+  <div class="viewer-top">
+    <span id="viewer-name"></span>
+    <div>
+      <button type="button" class="btn small" id="viewer-download">Download original</button>
+      <button type="button" class="icon-btn" id="viewer-close" aria-label="Close">×</button>
+    </div>
+  </div>
+  <div class="viewer-body" id="viewer-body"></div>
+</dialog>
+
+<!-- Rename / move -->
+<dialog id="edit-dialog" class="small-dialog">
+  <form method="dialog" id="edit-form">
+    <h2 id="edit-title">Rename</h2>
+    <label for="edit-input" id="edit-label">New name</label>
+    <input id="edit-input" type="text" required maxlength="120" list="folder-list">
+    <datalist id="folder-list"></datalist>
+    <div class="dialog-actions">
+      <button type="button" class="btn ghost" id="edit-cancel">Cancel</button>
+      <button type="submit" class="btn">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Delete confirmation -->
+<dialog id="delete-dialog" class="small-dialog">
+  <form method="dialog">
+    <h2>Delete this file?</h2>
+    <p class="muted"><strong id="delete-name"></strong> will be removed from the cloud permanently.</p>
+    <div class="dialog-actions">
+      <button type="button" class="btn ghost" id="delete-cancel">Cancel</button>
+      <button type="button" class="btn danger" id="delete-confirm">Delete</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}

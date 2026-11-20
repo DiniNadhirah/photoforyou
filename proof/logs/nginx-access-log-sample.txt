@@ -1,0 +1,34 @@
+# nginx load balancer access log (3-instance load test) - which instance answered each request
+# upstream=127.0.0.1:8001 -> A, :8002 -> B, :8003 -> C
+
+Requests per instance:
+   7119 A (8001)
+   7118 B (8002)
+   7117 C (8003)
+
+Sample lines:
+2026-11-12T15:25:03+08:00 client=10.190.221.83 upstream=127.0.0.1:8003 status=201 upstream_status=201 rt=0.429 urt=0.430 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.187.45.5 upstream=127.0.0.1:8003 status=201 upstream_status=201 rt=0.330 urt=0.330 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.15.49.66 upstream=127.0.0.1:8002 status=201 upstream_status=201 rt=0.712 urt=0.713 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.186.63.17 upstream=127.0.0.1:8001 status=201 upstream_status=201 rt=0.921 urt=0.922 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.76.184.91 upstream=127.0.0.1:8002 status=200 upstream_status=200 rt=0.591 urt=0.592 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.135.207.134 upstream=127.0.0.1:8002 status=200 upstream_status=200 rt=0.592 urt=0.592 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.86.215.20 upstream=127.0.0.1:8002 status=200 upstream_status=200 rt=0.609 urt=0.609 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.149.175.73 upstream=127.0.0.1:8003 status=200 upstream_status=200 rt=0.272 urt=0.273 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.121.185.6 upstream=127.0.0.1:8001 status=201 upstream_status=201 rt=0.891 urt=0.888 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.88.14.246 upstream=127.0.0.1:8001 status=201 upstream_status=201 rt=0.858 urt=0.852 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.50.95.245 upstream=127.0.0.1:8003 status=201 upstream_status=201 rt=0.394 urt=0.391 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.228.237.9 upstream=127.0.0.1:8003 status=201 upstream_status=201 rt=0.384 urt=0.384 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.101.11.144 upstream=127.0.0.1:8002 status=201 upstream_status=201 rt=0.766 urt=0.766 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.173.174.253 upstream=127.0.0.1:8003 status=200 upstream_status=200 rt=0.199 urt=0.198 "GET /api/media/80862399-2c85-4308-ba9d-ed90eb71bdc5/url HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.41.236.59 upstream=127.0.0.1:8002 status=200 upstream_status=200 rt=0.700 urt=0.700 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.231.250.81 upstream=127.0.0.1:8001 status=200 upstream_status=200 rt=0.823 urt=0.823 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.189.123.190 upstream=127.0.0.1:8001 status=201 upstream_status=201 rt=0.865 urt=0.859 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.147.233.206 upstream=127.0.0.1:8001 status=201 upstream_status=201 rt=0.871 urt=0.872 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.15.49.66 upstream=127.0.0.1:8003 status=201 upstream_status=201 rt=0.331 urt=0.331 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.64.204.187 upstream=127.0.0.1:8003 status=200 upstream_status=200 rt=0.298 urt=0.298 "GET /api/media HTTP/1.1"
+2026-11-12T15:25:03+08:00 client=10.168.83.168 upstream=127.0.0.1:8001 status=201 upstream_status=201 rt=0.943 urt=0.943 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:04+08:00 client=10.222.182.238 upstream=127.0.0.1:8003 status=201 upstream_status=201 rt=0.392 urt=0.392 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:04+08:00 client=10.31.118.10 upstream=127.0.0.1:8002 status=201 upstream_status=201 rt=0.804 urt=0.804 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:04+08:00 client=10.116.105.157 upstream=127.0.0.1:8002 status=201 upstream_status=201 rt=0.734 urt=0.735 "POST /api/media HTTP/1.1"
+2026-11-12T15:25:04+08:00 client=10.162.100.118 upstream=127.0.0.1:8002 status=201 upstream_status=201 rt=0.698 urt=0.697 "POST /api/media HTTP/1.1"

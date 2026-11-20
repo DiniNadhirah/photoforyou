@@ -1,0 +1,67 @@
+# Render Blueprint: 2 app instances + 1 nginx load balancer (all free plan).
+# Render dashboard -> New -> Blueprint -> pick this repo.
+# After the first deploy, fill in the "sync: false" values (see docs/DEPLOY.md).
+envVarGroups:
+  - name: photoforyou-shared
+    envVars:
+      - key: SECRET_KEY          # must be identical on every instance
+        generateValue: true
+      - key: LB_TOKEN            # shared secret between nginx and the app
+        generateValue: true
+      - key: STORAGE_BACKEND
+        value: supabase
+      - key: SUPABASE_BUCKET
+        value: vault
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+services:
+  - type: web
+    name: photoforyou-a
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: photoforyou-shared
+      - key: INSTANCE_NAME
+        value: A
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY        # service_role key - keep secret
+        sync: false
+
+  - type: web
+    name: photoforyou-b
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: photoforyou-shared
+      - key: INSTANCE_NAME
+        value: B
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY        # service_role key - keep secret
+        sync: false
+
+  - type: web
+    name: photoforyou-lb
+    runtime: docker
+    plan: free
+    dockerfilePath: ./lb/Dockerfile
+    dockerContext: ./lb
+    healthCheckPath: /lb-health
+    envVars:
+      - key: PORT
+        value: "10000"
+      - fromGroup: photoforyou-shared   # provides LB_TOKEN
+      - key: UPSTREAM_A_HOST     # e.g. photoforyou-a.onrender.com
+        sync: false
+      - key: UPSTREAM_B_HOST     # e.g. photoforyou-b.onrender.com
+        sync: false

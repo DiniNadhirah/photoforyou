@@ -1,0 +1,40 @@
+$ curl -sI http://localhost:8080/login
+HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Date: Thu, 12 Nov 2026 07:36:51 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 1567
+Connection: keep-alive
+X-Instance: C
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Cache-Control: no-store
+Vary: Cookie
+Set-Cookie: session=eyJjc3JmX3Rva2VuIjoiZGQ4NDNkMzYxMjFiYzFjOTVhNzhmYzA0YjNkODE5YzMyZmZhOWNhMyJ9.avVskw.Msqr5ZYLKc0jFWU3N4Ij1Jm-MNU; HttpOnly; Path=/; SameSite=Lax
+X-Upstream: 127.0.0.1:8003
+X-Load-Balancer: nginx
+
+
+$ curl -sI http://localhost:8080/static/css/app.css   (second request: served from nginx cache)
+HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Date: Thu, 12 Nov 2026 07:36:51 GMT
+Content-Type: text/css; charset=utf-8
+Content-Length: 9891
+Connection: keep-alive
+Content-Disposition: inline; filename=app.css
+Last-Modified: Thu, 12 Nov 2026 07:14:39 GMT
+Cache-Control: public, max-age=86400
+ETag: "1794467679.7398696-9891-1616192526"
+X-Instance: A
+Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+X-Cache: HIT
+X-Load-Balancer: nginx
+
